@@ -265,22 +265,22 @@ select.field-input{cursor:pointer;}
     <div style="height:16px"></div>
     <div class="field-group">
       <label class="field-label">Modelo / Marca</label>
-      <input class="field-input" id="f-modelo" placeholder="Ex: Onix Plus 1.0T Premier 2021" type="text">
+      <input class="field-input" id="f-modelo" placeholder="Ex: ONIX PLUS 1.0T PREMIER" type="text" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
     </div>
     <div class="field-row">
       <div class="field-group">
         <label class="field-label">Placa</label>
-        <input class="field-input" id="f-placa" placeholder="ABC1D23" type="text" style="text-transform:uppercase">
+        <input class="field-input" id="f-placa" placeholder="ABC1D23" type="text" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
       </div>
       <div class="field-group">
         <label class="field-label">Cor</label>
-        <input class="field-input" id="f-cor" placeholder="Prata" type="text">
+        <input class="field-input" id="f-cor" placeholder="PRATA" type="text" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
       </div>
     </div>
     <div class="field-row">
       <div class="field-group">
         <label class="field-label">Ano</label>
-        <input class="field-input" id="f-ano" placeholder="2021/2022" type="text">
+        <input class="field-input" id="f-ano" placeholder="2021/2022" type="text" inputmode="numeric" maxlength="9" oninput="mascaraAno(this)">
       </div>
       <div class="field-group">
         <label class="field-label">KM</label>
@@ -572,6 +572,13 @@ window.excluirVeiculo = async function(){
 }
 
 // ── ADICIONAR ──────────────────────────────────────
+// ── MÁSCARA ANO ───────────────────────────────────
+window.mascaraAno = function(input){
+  let v = input.value.replace(/[^0-9]/g,"");
+  if(v.length > 4) v = v.slice(0,4) + "/" + v.slice(4,8);
+  input.value = v;
+}
+
 window.abrirAdd = function(){
   document.getElementById('overlay-add').classList.add('open');
   document.body.style.overflow='hidden';
@@ -585,13 +592,13 @@ window.fecharAdd = function(e){
 }
 
 window.adicionarVeiculo = async function(){
-  const modelo=document.getElementById('f-modelo').value.trim();
+  const modelo=document.getElementById("f-modelo").value.trim().toUpperCase();
   const placa=document.getElementById('f-placa').value.trim().toUpperCase();
   if(!modelo||!placa){ showToast('Preencha modelo e placa'); return; }
   setSyncing();
   const novo = {
     modelo,placa,
-    cor:document.getElementById('f-cor').value.trim(),
+    cor:document.getElementById("f-cor").value.trim().toUpperCase(),
     ano:document.getElementById('f-ano').value.trim(),
     km:document.getElementById('f-km').value.trim(),
     status:document.getElementById('f-status').value,
@@ -620,3 +627,4 @@ window.showToast = function(msg){
 </script>
 </body>
 </html>
+
