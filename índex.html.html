@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AP Esteira">
+<meta name="theme-color" content="#090907">
+<title>Auto Prosperità — Esteira</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#090907;--bg2:#111110;--bg3:#1a1a17;--bg4:#242420;
+  --ouro:#c9a84c;--ouro-cl:#e2c36a;--ouro-dk:#7a5e1a;
+  --creme:#f0ead8;--cinza:#6b6b60;--cinza2:#3a3a33;
+  --pronto:#2d6a4f;--pronto-cl:#52b788;--pronto-bg:rgba(45,106,79,.12);
+  --funilaria:#8a4f1a;--funilaria-cl:#e8924a;--funilaria-bg:rgba(138,79,26,.12);
+  --doc:#1a3a6a;--doc-cl:#5b8dd9;--doc-bg:rgba(26,58,106,.12);
+  --vistoria:#5a1a6a;--vistoria-cl:#b06dd9;--vistoria-bg:rgba(90,26,106,.12);
+  --venda:#6a1a1a;--venda-cl:#e07a5f;--venda-bg:rgba(106,26,26,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{height:100%;background:var(--bg);}
+body{font-family:'DM Sans',sans-serif;color:var(--creme);background:var(--bg);min-height:100vh;min-height:100dvh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,var(--bg) 0%,rgba(9,9,7,.95) 100%);border-bottom:1px solid rgba(201,168,76,.12);padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px);}
+.header-brand{display:flex;align-items:center;gap:10px;}
+.header-mark{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ouro-dk),var(--ouro));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:14px;color:#090907;flex-shrink:0;}
+.header-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;color:var(--creme);}
+.header-title span{color:var(--ouro);}
+.header-sub{font-size:10px;color:var(--cinza);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#52b788;flex-shrink:0;transition:background .3s;}
+.sync-dot.syncing{background:var(--ouro);animation:pulse 1s infinite;}
+.sync-dot.error{background:#e07a5f;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.btn-add{display:flex;align-items:center;gap:6px;background:var(--ouro);color:#090907;border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-add:active{transform:scale(.96);}
+
+/* TABS */
+.tabs{display:flex;gap:6px;padding:14px 20px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,.04);}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{display:flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid transparent;background:var(--bg3);color:var(--cinza);}
+.tab.active{background:var(--ouro);color:#090907;}
+.tab-count{font-size:10px;font-weight:700;background:rgba(0,0,0,.2);border-radius:10px;padding:1px 6px;}
+
+/* KANBAN */
+.kanban{padding:16px 20px;display:flex;flex-direction:column;gap:12px;padding-bottom:100px;}
+
+/* COLUNA */
+.coluna{border-radius:12px;border:1px solid rgba(255,255,255,.06);overflow:hidden;}
+.coluna-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none;}
+.coluna-left{display:flex;align-items:center;gap:10px;}
+.coluna-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.coluna-nome{font-size:13px;font-weight:600;letter-spacing:.3px;}
+.coluna-qtd{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--cinza);}
+.coluna-chevron{font-size:10px;color:var(--cinza);transition:transform .25s;}
+.coluna.collapsed .coluna-chevron{transform:rotate(-90deg);}
+.coluna-body{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.03);overflow:hidden;max-height:2000px;transition:max-height .3s ease;}
+.coluna.collapsed .coluna-body{max-height:0;}
+
+.coluna[data-status="pronto"] .coluna-header{background:var(--pronto-bg);}
+.coluna[data-status="pronto"] .coluna-dot{background:var(--pronto-cl);}
+.coluna[data-status="pronto"] .coluna-nome{color:var(--pronto-cl);}
+.coluna[data-status="funilaria"] .coluna-header{background:var(--funilaria-bg);}
+.coluna[data-status="funilaria"] .coluna-dot{background:var(--funilaria-cl);}
+.coluna[data-status="funilaria"] .coluna-nome{color:var(--funilaria-cl);}
+.coluna[data-status="doc"] .coluna-header{background:var(--doc-bg);}
+.coluna[data-status="doc"] .coluna-dot{background:var(--doc-cl);}
+.coluna[data-status="doc"] .coluna-nome{color:var(--doc-cl);}
+.coluna[data-status="vistoria"] .coluna-header{background:var(--vistoria-bg);}
+.coluna[data-status="vistoria"] .coluna-dot{background:var(--vistoria-cl);}
+.coluna[data-status="vistoria"] .coluna-nome{color:var(--vistoria-cl);}
+.coluna[data-status="venda"] .coluna-header{background:var(--venda-bg);}
+.coluna[data-status="venda"] .coluna-dot{background:var(--venda-cl);}
+.coluna[data-status="venda"] .coluna-nome{color:var(--venda-cl);}
+
+/* CARD */
+.card{background:var(--bg2);padding:14px 16px;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:12px;}
+.card:active{background:var(--bg3);}
+.card-thumb{width:46px;height:38px;border-radius:6px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid rgba(255,255,255,.06);}
+.card-info{flex:1;min-width:0;}
+.card-modelo{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-placa{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--ouro);margin-top:2px;}
+.card-meta{font-size:11px;color:var(--cinza);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-badge{display:inline-block;margin-top:4px;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:6px;text-transform:uppercase;}
+.badge-venda{background:var(--venda-bg);color:var(--venda-cl);border:1px solid rgba(224,122,95,.2);}
+.card-check{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
+.card-progress{font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--cinza);white-space:nowrap;}
+.card-bar{width:36px;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;}
+.card-bar-fill{height:100%;border-radius:2px;transition:width .3s;}
+.card-arrow{color:var(--cinza);font-size:12px;flex-shrink:0;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(4px);}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid rgba(201,168,76,.15);width:100%;max-height:92vh;max-height:92dvh;overflow-y:auto;transform:translateY(40px);transition:transform .3s cubic-bezier(.32,0,.67,0);padding-bottom:env(safe-area-inset-bottom,20px);}
+.overlay.open .modal{transform:translateY(0);}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.1);margin:12px auto 0;}
+.modal-header{padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.modal-modelo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;line-height:1.2;}
+.modal-placa{display:inline-block;margin-top:4px;background:var(--ouro);color:#090907;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 10px;border-radius:4px;}
+.modal-close{background:var(--bg3);border:none;color:var(--creme);width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+
+/* STATUS BTNS */
+.modal-status{padding:14px 20px 10px;border-bottom:1px solid rgba(255,255,255,.06);}
+.modal-status label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:8px;}
+.status-btns{display:flex;flex-wrap:wrap;gap:6px;}
+.status-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.1);background:var(--bg3);color:var(--cinza);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.status-btn.sel-pronto{background:var(--pronto-bg);border-color:var(--pronto-cl);color:var(--pronto-cl);}
+.status-btn.sel-funilaria{background:var(--funilaria-bg);border-color:var(--funilaria-cl);color:var(--funilaria-cl);}
+.status-btn.sel-doc{background:var(--doc-bg);border-color:var(--doc-cl);color:var(--doc-cl);}
+.status-btn.sel-vistoria{background:var(--vistoria-bg);border-color:var(--vistoria-cl);color:var(--vistoria-cl);}
+.status-btn.sel-venda{background:var(--venda-bg);border-color:var(--venda-cl);color:var(--venda-cl);}
+
+/* VENDA COM PENDÊNCIAS TOGGLE */
+.venda-section{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:none;}
+.venda-section.visible{display:block;}
+.venda-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;}
+.venda-toggle-info{}
+.venda-toggle-title{font-size:13px;font-weight:600;color:var(--venda-cl);}
+.venda-toggle-sub{font-size:11px;color:var(--cinza);margin-top:2px;}
+.toggle-switch{width:44px;height:24px;border-radius:12px;background:var(--bg4);border:1px solid var(--cinza2);position:relative;flex-shrink:0;transition:background .2s;}
+.toggle-switch.on{background:var(--venda-cl);border-color:var(--venda-cl);}
+.toggle-switch::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s;}
+.toggle-switch.on::after{transform:translateX(20px);}
+.pendencias-input{margin-top:10px;display:none;}
+.venda-section .pendencias-input.visible{display:block;}
+textarea.pend-text{width:100%;background:var(--bg3);border:1px solid rgba(224,122,95,.2);border-radius:10px;color:var(--creme);padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;resize:none;height:70px;outline:none;}
+textarea.pend-text::placeholder{color:var(--cinza);}
+
+/* CHECKLIST */
+.checklist-section{padding:14px 20px;}
+.checklist-title{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.checklist-progress-text{font-size:11px;font-weight:600;color:var(--ouro);letter-spacing:0;}
+.check-group{margin-bottom:16px;}
+.check-group-name{font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--cinza);margin-bottom:8px;text-transform:uppercase;}
+.check-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;}
+.check-item:last-child{border-bottom:none;}
+.check-box{width:20px;height:20px;border-radius:6px;flex-shrink:0;border:1.5px solid var(--cinza2);background:transparent;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.check-box.checked{background:var(--ouro);border-color:var(--ouro);}
+.check-box svg{width:11px;height:11px;stroke:#090907;stroke-width:2.5;fill:none;opacity:0;transition:opacity .15s;}
+.check-box.checked svg{opacity:1;}
+.check-label{font-size:13px;color:var(--creme);transition:color .15s;line-height:1.3;}
+.check-item.done .check-label{color:var(--cinza);text-decoration:line-through;}
+
+/* OBS */
+.obs-section{padding:0 20px 20px;}
+.obs-section label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:8px;}
+textarea.obs-input{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:10px;color:var(--creme);padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;resize:none;height:80px;outline:none;transition:border-color .2s;}
+textarea.obs-input:focus{border-color:rgba(201,168,76,.3);}
+
+.btn-salvar{margin:0 20px 10px;width:calc(100% - 40px);background:var(--ouro);color:#090907;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;letter-spacing:.3px;transition:all .2s;}
+.btn-salvar:active{transform:scale(.98);}
+.btn-excluir{margin:0 20px 20px;width:calc(100% - 40px);background:transparent;color:var(--cinza);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+
+/* FORM ADD */
+.field-group{padding:0 20px 14px;}
+.field-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:6px;}
+.field-input{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:10px;color:var(--creme);padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.field-input:focus{border-color:rgba(201,168,76,.3);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 14px;}
+.field-row .field-group{padding:0;}
+select.field-input{cursor:pointer;}
+
+/* LOADING */
+.loading{text-align:center;padding:40px 20px;color:var(--cinza);font-size:13px;}
+.loading-spinner{width:24px;height:24px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--ouro);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.empty{text-align:center;padding:32px 20px;color:var(--cinza);font-size:12px;}
+.empty-icon{font-size:28px;margin-bottom:8px;opacity:.4;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg3);border:1px solid rgba(201,168,76,.25);border-radius:20px;padding:10px 20px;font-size:12px;color:var(--creme);opacity:0;transition:all .3s;pointer-events:none;z-index:500;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-mark">AP</div>
+    <div>
+      <div class="header-title">Auto <span>Prosperità</span></div>
+      <div class="header-sub">Esteira de Veículos</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="sync-dot" id="sync-dot" title="Sincronizado"></div>
+    <button class="btn-add" onclick="abrirAdd()">+ Veículo</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-filter="todos" onclick="filtrar(this)">Todos <span class="tab-count" id="cnt-todos">0</span></div>
+  <div class="tab" data-filter="pronto" onclick="filtrar(this)">🟢 Prontos <span class="tab-count" id="cnt-pronto">0</span></div>
+  <div class="tab" data-filter="funilaria" onclick="filtrar(this)">🔧 Funilaria <span class="tab-count" id="cnt-funilaria">0</span></div>
+  <div class="tab" data-filter="doc" onclick="filtrar(this)">📄 Documentos <span class="tab-count" id="cnt-doc">0</span></div>
+  <div class="tab" data-filter="vistoria" onclick="filtrar(this)">🔍 Vistoria <span class="tab-count" id="cnt-vistoria">0</span></div>
+  <div class="tab" data-filter="venda" onclick="filtrar(this)">🏷️ À Venda <span class="tab-count" id="cnt-venda">0</span></div>
+</div>
+
+<div class="kanban" id="kanban">
+  <div class="loading"><div class="loading-spinner"></div>Conectando ao banco de dados...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODAL DETALHE -->
+<div class="overlay" id="overlay-detalhe" onclick="fecharDetalhe(event)">
+  <div class="modal" id="modal-detalhe">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div>
+        <div class="modal-modelo" id="d-modelo"></div>
+        <span class="modal-placa" id="d-placa"></span>
+      </div>
+      <button class="modal-close" onclick="fecharDetalhe()">✕</button>
+    </div>
+    <div class="modal-status">
+      <label>Status na esteira</label>
+      <div class="status-btns" id="d-status-btns"></div>
+    </div>
+    <!-- VENDA COM PENDÊNCIAS -->
+    <div class="venda-section" id="venda-section">
+      <div class="venda-toggle" onclick="toggleVendaPendencias()">
+        <div class="venda-toggle-info">
+          <div class="venda-toggle-title">⚠️ À venda com pendências</div>
+          <div class="venda-toggle-sub">Repasse / vendido no estado</div>
+        </div>
+        <div class="toggle-switch" id="venda-toggle-sw"></div>
+      </div>
+      <div class="pendencias-input" id="pendencias-input">
+        <textarea class="pend-text" id="d-pendencias" placeholder="Descreva as pendências (ex: sem chave reserva, funilaria leve na lateral...)"></textarea>
+      </div>
+    </div>
+    <div class="checklist-section">
+      <div class="checklist-title">
+        <span>Checklist de Entrada</span>
+        <span class="checklist-progress-text" id="d-progress-text"></span>
+      </div>
+      <div id="d-checklist"></div>
+    </div>
+    <div class="obs-section">
+      <label>Observações</label>
+      <textarea class="obs-input" id="d-obs" placeholder="Anotações sobre o veículo..."></textarea>
+    </div>
+    <button class="btn-salvar" onclick="salvarDetalhe()">Salvar alterações</button>
+    <button class="btn-excluir" onclick="excluirVeiculo()">Remover veículo</button>
+  </div>
+</div>
+
+<!-- MODAL ADD -->
+<div class="overlay" id="overlay-add" onclick="fecharAdd(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-modelo" style="font-size:18px">Novo Veículo</div>
+      <button class="modal-close" onclick="fecharAdd()">✕</button>
+    </div>
+    <div style="height:16px"></div>
+    <div class="field-group">
+      <label class="field-label">Modelo / Marca</label>
+      <input class="field-input" id="f-modelo" placeholder="Ex: Onix Plus 1.0T Premier 2021" type="text">
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Placa</label>
+        <input class="field-input" id="f-placa" placeholder="ABC1D23" type="text" style="text-transform:uppercase">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Cor</label>
+        <input class="field-input" id="f-cor" placeholder="Prata" type="text">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Ano</label>
+        <input class="field-input" id="f-ano" placeholder="2021/2022" type="text">
+      </div>
+      <div class="field-group">
+        <label class="field-label">KM</label>
+        <input class="field-input" id="f-km" placeholder="45.000" type="text">
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Status inicial</label>
+      <select class="field-input" id="f-status">
+        <option value="vistoria">🔍 Em Vistoria / Avaliação</option>
+        <option value="funilaria">🔧 Funilaria / Mecânica</option>
+        <option value="doc">📄 Aguardando Documentos</option>
+        <option value="pronto">🟢 Pronto para Venda</option>
+        <option value="venda">🏷️ À Venda com Pendências</option>
+      </select>
+    </div>
+    <button class="btn-salvar" style="margin-top:6px" onclick="adicionarVeiculo()">Adicionar à esteira</button>
+    <div style="height:10px"></div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCNInPCmUuqh3VXkIuYX7FyuqpNNmz0BX8",
+  authDomain: "auto-prosperita.firebaseapp.com",
+  databaseURL: "https://auto-prosperita-default-rtdb.firebaseio.com",
+  projectId: "auto-prosperita",
+  storageBucket: "auto-prosperita.firebasestorage.app",
+  messagingSenderId: "522429666183",
+  appId: "1:522429666183:web:31cc54504aebfe363a7922"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const veiculosRef = ref(db, 'veiculos');
+
+// ── CHECKLIST TEMPLATE ─────────────────────────────
+const CHECKLIST_TEMPLATE = [
+  { grupo:"Documentação", itens:["CRV / DUT em mãos","Verificação de multas","Débitos IPVA quitados","Licenciamento em dia","Laudo de vistoria","Chave reserva"] },
+  { grupo:"Estética",     itens:["Funilaria e pintura","Vidros e espelhos","Faróis e lanternas","Rodas e pneus","Higienização interna","Higienização externa"] },
+  { grupo:"Mecânica",     itens:["Óleo e filtros","Sistema de freios","Suspensão e direção","Ar-condicionado","Bateria e elétrica","Test drive aprovado"] },
+  { grupo:"Fotos e Anúncio", itens:["Fotos externas feitas","Fotos internas feitas","Fotos motor feitas","Anúncio publicado"] }
+];
+
+function novoChecklist(){
+  return CHECKLIST_TEMPLATE.map(g => ({ grupo:g.grupo, itens:g.itens.map(nome=>({nome,feito:false})) }));
+}
+
+// ── STATE ──────────────────────────────────────────
+let veiculos = {};
+let filtroAtual = 'todos';
+let veiculoAtualId = null;
+let vendaPendente = false;
+
+const syncDot = document.getElementById('sync-dot');
+function setSyncing(){ syncDot.className='sync-dot syncing'; }
+function setSynced(){ syncDot.className='sync-dot'; }
+function setError(){ syncDot.className='sync-dot error'; }
+
+// ── REALTIME LISTENER ──────────────────────────────
+onValue(veiculosRef, (snapshot) => {
+  veiculos = snapshot.val() || {};
+  setSynced();
+  render();
+}, (error) => { setError(); showToast('Erro de conexão'); });
+
+// ── COLUNAS ────────────────────────────────────────
+const COLUNAS = [
+  { status:'pronto',    nome:'🟢 Pronto para Venda',      emoji:'🚗' },
+  { status:'funilaria', nome:'🔧 Funilaria / Mecânica',   emoji:'🔧' },
+  { status:'doc',       nome:'📄 Aguardando Documentos',  emoji:'📋' },
+  { status:'vistoria',  nome:'🔍 Vistoria / Avaliação',   emoji:'🔍' },
+  { status:'venda',     nome:'🏷️ À Venda c/ Pendências',  emoji:'🏷️' },
+];
+
+function calcProgress(checklist){
+  if(!checklist) return 0;
+  let total=0,feito=0;
+  checklist.forEach(g => g.itens.forEach(i=>{ total++; if(i.feito) feito++; }));
+  return total===0?0:Math.round(feito/total*100);
+}
+function barColor(p){ return p===100?'#52b788':p>=60?'#c9a84c':'#e8924a'; }
+
+// ── RENDER ─────────────────────────────────────────
+function render(){
+  const kanban = document.getElementById('kanban');
+  kanban.innerHTML = '';
+
+  const arr = Object.entries(veiculos).map(([id,v])=>({...v,id}));
+  const counts = {todos:arr.length,pronto:0,funilaria:0,doc:0,vistoria:0,venda:0};
+  arr.forEach(v=>{ if(counts[v.status]!==undefined) counts[v.status]++; });
+  Object.keys(counts).forEach(k=>{ const el=document.getElementById('cnt-'+k); if(el) el.textContent=counts[k]; });
+
+  COLUNAS.forEach(col=>{
+    const lista = arr.filter(v=> (filtroAtual==='todos'||filtroAtual===col.status) && v.status===col.status);
+    if(filtroAtual!=='todos' && filtroAtual!==col.status) return;
+
+    const div = document.createElement('div');
+    div.className='coluna';
+    div.setAttribute('data-status',col.status);
+    div.innerHTML=`
+      <div class="coluna-header" onclick="toggleColuna(this)">
+        <div class="coluna-left"><div class="coluna-dot"></div><div class="coluna-nome">${col.nome}</div></div>
+        <div style="display:flex;align-items:center;gap:8px"><div class="coluna-qtd">${lista.length}</div><div class="coluna-chevron">▼</div></div>
+      </div>
+      <div class="coluna-body" id="body-${col.status}"></div>`;
+    kanban.appendChild(div);
+
+    const body = document.getElementById('body-'+col.status);
+    if(lista.length===0){
+      body.innerHTML=`<div class="empty"><div class="empty-icon">${col.emoji}</div>Nenhum veículo aqui</div>`;
+    } else {
+      lista.forEach(v=>{
+        const prog = calcProgress(v.checklist);
+        const card = document.createElement('div');
+        card.className='card';
+        card.onclick=()=>abrirDetalhe(v.id);
+        const pendBadge = v.vendaPendencias ? `<div class="card-badge badge-venda">⚠️ Pendências</div>` : '';
+        card.innerHTML=`
+          <div class="card-thumb">${col.emoji}</div>
+          <div class="card-info">
+            <div class="card-modelo">${v.modelo}</div>
+            <div class="card-placa">${v.placa}</div>
+            <div class="card-meta">${v.ano?v.ano+' · ':''}${v.cor||''}${v.km?' · '+v.km+' km':''}</div>
+            ${pendBadge}
+          </div>
+          <div class="card-check">
+            <div class="card-progress">${prog}%</div>
+            <div class="card-bar"><div class="card-bar-fill" style="width:${prog}%;background:${barColor(prog)}"></div></div>
+          </div>
+          <div class="card-arrow">›</div>`;
+        body.appendChild(card);
+      });
+    }
+  });
+}
+
+window.toggleColuna = function(header){ header.closest('.coluna').classList.toggle('collapsed'); }
+
+window.filtrar = function(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  filtroAtual=tab.dataset.filter;
+  render();
+}
+
+// ── DETALHE ────────────────────────────────────────
+window.abrirDetalhe = function(id){
+  const v = veiculos[id];
+  if(!v) return;
+  veiculoAtualId = id;
+  vendaPendente = v.vendaPendencias || false;
+
+  document.getElementById('d-modelo').textContent = v.modelo;
+  document.getElementById('d-placa').textContent = v.placa;
+  document.getElementById('d-obs').value = v.obs||'';
+  document.getElementById('d-pendencias').value = v.pendenciasDesc||'';
+
+  // status btns
+  const sb = document.getElementById('d-status-btns');
+  sb.innerHTML='';
+  COLUNAS.forEach(col=>{
+    const btn = document.createElement('button');
+    btn.className='status-btn'+(v.status===col.status?' sel-'+col.status:'');
+    btn.textContent=col.nome;
+    btn.onclick=()=>{
+      sb.querySelectorAll('.status-btn').forEach(b=>b.className='status-btn');
+      btn.className='status-btn sel-'+col.status;
+      veiculos[id] = {...veiculos[id], status:col.status};
+      // mostrar/esconder seção venda pendências
+      const vs = document.getElementById('venda-section');
+      if(col.status==='venda'||col.status==='pronto'){
+        vs.classList.add('visible');
+      } else {
+        vs.classList.remove('visible');
+      }
+    };
+    sb.appendChild(btn);
+  });
+
+  // venda pendências section
+  const vs = document.getElementById('venda-section');
+  if(v.status==='venda'||v.status==='pronto'){ vs.classList.add('visible'); } else { vs.classList.remove('visible'); }
+  atualizarToggle();
+
+  renderChecklist(v, id);
+
+  document.getElementById('overlay-detalhe').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function atualizarToggle(){
+  const sw = document.getElementById('venda-toggle-sw');
+  const pi = document.getElementById('pendencias-input');
+  if(vendaPendente){
+    sw.classList.add('on');
+    pi.classList.add('visible');
+  } else {
+    sw.classList.remove('on');
+    pi.classList.remove('visible');
+  }
+}
+
+window.toggleVendaPendencias = function(){
+  vendaPendente = !vendaPendente;
+  atualizarToggle();
+}
+
+function renderChecklist(v, id){
+  const container = document.getElementById('d-checklist');
+  container.innerHTML='';
+  const checklist = v.checklist || novoChecklist();
+  let total=0,feito=0;
+  checklist.forEach(g=>g.itens.forEach(i=>{total++;if(i.feito)feito++;}));
+  document.getElementById('d-progress-text').textContent=feito+'/'+total+' itens';
+
+  checklist.forEach((grupo,gi)=>{
+    const g=document.createElement('div');
+    g.className='check-group';
+    g.innerHTML=`<div class="check-group-name">${grupo.grupo}</div>`;
+    grupo.itens.forEach((item,ii)=>{
+      const row=document.createElement('div');
+      row.className='check-item'+(item.feito?' done':'');
+      const box=document.createElement('div');
+      box.className='check-box'+(item.feito?' checked':'');
+      box.innerHTML=`<svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9.5 10.5,2.5"/></svg>`;
+      const label=document.createElement('div');
+      label.className='check-label';
+      label.textContent=item.nome;
+      row.onclick=()=>{
+        item.feito=!item.feito;
+        row.classList.toggle('done',item.feito);
+        box.classList.toggle('checked',item.feito);
+        let t=0,f=0;
+        checklist.forEach(gg=>gg.itens.forEach(i=>{t++;if(i.feito)f++;}));
+        document.getElementById('d-progress-text').textContent=f+'/'+t+' itens';
+        veiculos[id]={...veiculos[id],checklist};
+      };
+      row.appendChild(box);
+      row.appendChild(label);
+      g.appendChild(row);
+    });
+    container.appendChild(g);
+  });
+}
+
+window.fecharDetalhe = function(e){
+  if(e && e.target!==document.getElementById('overlay-detalhe')) return;
+  document.getElementById('overlay-detalhe').classList.remove('open');
+  document.body.style.overflow='';
+  veiculoAtualId=null;
+}
+
+window.salvarDetalhe = async function(){
+  const v = veiculos[veiculoAtualId];
+  if(!v) return;
+  setSyncing();
+  const updated = {
+    ...v,
+    obs: document.getElementById('d-obs').value,
+    vendaPendencias: vendaPendente,
+    pendenciasDesc: vendaPendente ? document.getElementById('d-pendencias').value : ''
+  };
+  try {
+    await set(ref(db,'veiculos/'+veiculoAtualId), updated);
+    document.getElementById('overlay-detalhe').classList.remove('open');
+    document.body.style.overflow='';
+    veiculoAtualId=null;
+    showToast('Salvo ✓');
+    setSynced();
+  } catch(e){ setError(); showToast('Erro ao salvar'); }
+}
+
+window.excluirVeiculo = async function(){
+  if(!confirm('Remover este veículo da esteira?')) return;
+  setSyncing();
+  try {
+    await remove(ref(db,'veiculos/'+veiculoAtualId));
+    document.getElementById('overlay-detalhe').classList.remove('open');
+    document.body.style.overflow='';
+    veiculoAtualId=null;
+    showToast('Veículo removido');
+    setSynced();
+  } catch(e){ setError(); showToast('Erro ao remover'); }
+}
+
+// ── ADICIONAR ──────────────────────────────────────
+window.abrirAdd = function(){
+  document.getElementById('overlay-add').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('f-modelo').focus(),350);
+}
+
+window.fecharAdd = function(e){
+  if(e && e.target!==document.getElementById('overlay-add')) return;
+  document.getElementById('overlay-add').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+window.adicionarVeiculo = async function(){
+  const modelo=document.getElementById('f-modelo').value.trim();
+  const placa=document.getElementById('f-placa').value.trim().toUpperCase();
+  if(!modelo||!placa){ showToast('Preencha modelo e placa'); return; }
+  setSyncing();
+  const novo = {
+    modelo,placa,
+    cor:document.getElementById('f-cor').value.trim(),
+    ano:document.getElementById('f-ano').value.trim(),
+    km:document.getElementById('f-km').value.trim(),
+    status:document.getElementById('f-status').value,
+    obs:'',vendaPendencias:false,pendenciasDesc:'',
+    checklist:novoChecklist(),
+    criadoEm: Date.now()
+  };
+  try {
+    await push(veiculosRef, novo);
+    ['f-modelo','f-placa','f-cor','f-ano','f-km'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-status').value='vistoria';
+    document.getElementById('overlay-add').classList.remove('open');
+    document.body.style.overflow='';
+    showToast('Veículo adicionado ✓');
+    setSynced();
+  } catch(e){ setError(); showToast('Erro ao adicionar'); }
+}
+
+// ── TOAST ──────────────────────────────────────────
+window.showToast = function(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+</script>
+</body>
+</html>
