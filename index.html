@@ -464,7 +464,7 @@ function render(){
   COLUNAS.forEach(col=>{
     const lista=arr.filter(v=>(filtroAtual==='todos'||filtroAtual===col.status)&&v.status===col.status);
     if(filtroAtual!=='todos'&&filtroAtual!==col.status) return;
-    const div=document.createElement('div'); div.className='coluna'+(['funilaria','doc','pronto','venda'].includes(col.status)?' collapsed':''); div.setAttribute('data-status',col.status);
+    const div=document.createElement('div'); div.className='coluna'+(['funilaria','doc','pronto','venda','vistoria'].includes(col.status)?' collapsed':''); div.setAttribute('data-status',col.status);
     div.innerHTML=`<div class="coluna-header" onclick="toggleColuna(this)"><div class="coluna-left"><div class="coluna-dot"></div><div class="coluna-nome">${col.nome}</div></div><div style="display:flex;align-items:center;gap:8px"><div class="coluna-qtd">${lista.length}</div><div class="coluna-chevron">▼</div></div></div><div class="coluna-body" id="body-${col.status}"></div>`;
     kanban.appendChild(div);
     const body=document.getElementById('body-'+col.status);
@@ -643,3 +643,4 @@ window.showToast=function(msg){const t=document.getElementById('toast');t.textCo
 </script>
 </body>
 </html>
+
