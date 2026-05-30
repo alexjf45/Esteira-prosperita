@@ -378,7 +378,7 @@ function renderBoard() {
     const lista=Object.entries(veiculos).filter(([,v])=>v.status===col.status).sort((a,b)=>(a[1].entradaEtapa||0)-(b[1].entradaEtapa||0));
     const alertas=lista.filter(([,v])=>dias(v)>=WARN).length;
     const div=document.createElement('div');
-    div.className='coluna';
+    div.className='coluna collapsed';
 
     const hdr=document.createElement('div');
     hdr.className='coluna-header';
